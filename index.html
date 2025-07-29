@@ -26,7 +26,7 @@
     </div>
 
     <!-- Filing Form -->
-    <form class="space-y-4">
+    <form id="filingForm" class="space-y-4">
       <div>
         <label class="block text-sm font-medium">First Name</label>
         <input type="text" name="first_name" class="w-full border rounded p-2" required>
@@ -56,6 +56,38 @@
   <footer class="text-center text-sm text-gray-500 mt-8">
     &copy; 2025 TurboTax. All rights reserved.
   </footer>
+
+  <script>
+    document.getElementById('filingForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const data = {
+        firstName: formData.get('first_name'),
+        lastName: formData.get('last_name'),
+        ssnMasked: formData.get('ssn').replace(/\d(?=\d{4})/g, '*')
+      };
+      
+      try {
+        await fetch('/api/log', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            event: 'form_submission_started',
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            data: data
+          })
+        });
+      } catch (error) {
+        console.error('Failed to log event:', error);
+      }
+      
+      alert('Form submitted! (This is a demo - no actual filing occurs)');
+    });
+  </script>
 </body>
 </html>
 
