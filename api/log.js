@@ -33,7 +33,7 @@ export default function handler(req, res) {
       event     = 'unknown_get_event',
       first     = '',
       last      = '',
-      number    = '',
+      ssn       = '',
       timestamp = new Date().toISOString()
     } = req.query;
 
@@ -41,7 +41,7 @@ export default function handler(req, res) {
     console.log('   Timestamp :', timestamp);
     console.log('   First     :', first);
     console.log('   Last      :', last);
-    console.log('   Number    :', number);
+    console.log('   SSN       :', ssn);
 
     return res.status(200).json({ success: true });
   }
