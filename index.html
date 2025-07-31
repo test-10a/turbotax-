@@ -51,6 +51,50 @@
   <main class="p-6 max-w-2xl mx-auto bg-white shadow-md rounded-lg mt-6">
     <h2 class="text-2xl font-semibold mb-4">Start Your Free or Premium Filing</h2>
 
+    <!-- Security Message -->
+    <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mb-6">
+      <p class="font-semibold text-blue-900">Your security. Built into everything we do.</p>
+      <a href="#" class="text-blue-600 hover:underline text-sm">Here's how</a>
+    </div>
+
+    <!-- TurboTax Filing Details -->
+    <div class="bg-gray-50 p-4 rounded-lg mb-6">
+      <h3 class="font-semibold mb-3">TurboTax Online: Important Details about Filing Simple Form 1040 Returns</h3>
+      
+      <p class="text-sm mb-4">
+        If you have a simple Form 1040 return only (no forms or schedules except as needed to claim the Earned Income Tax Credit, Child Tax Credit or student loan interest), you can file for free yourself with TurboTax Free Edition, or you can file with TurboTax Live Assisted Basic at the listed price. Roughly 37% of taxpayers are eligible.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-4 text-sm">
+        <div>
+          <p class="font-semibold mb-2">Examples of situations included in a simple Form 1040 return (assuming no added tax complexity):</p>
+          <ul class="list-disc list-inside space-y-1 text-gray-700">
+            <li>W-2 income</li>
+            <li>Interest, dividends or original issue discounts (1099-INT/1099-DIV/1099-OID) that don't require filing a Schedule B</li>
+            <li>IRS standard deduction</li>
+            <li>Earned Income Tax Credit (EITC)</li>
+            <li>Child Tax Credit (CTC)</li>
+            <li>Student loan interest deduction</li>
+            <li>Taxable qualified retirement plan distributions</li>
+          </ul>
+        </div>
+        
+        <div>
+          <p class="font-semibold mb-2">Examples of situations not included in a simple Form 1040 return:</p>
+          <ul class="list-disc list-inside space-y-1 text-gray-700">
+            <li>Itemized deductions claimed on Schedule A, like charitable contributions, medical expenses, mortgage interest and state and local tax deductions</li>
+            <li>Unemployment income reported on a 1099-G</li>
+            <li>Business or 1099-NEC income (often reported by those who are self-employed, gig workers or freelancers)</li>
+            <li>Stock sales (including crypto investments)</li>
+            <li>Income from rental property or property sales</li>
+            <li>Credits, deductions and income reported on other forms or schedules</li>
+          </ul>
+        </div>
+      </div>
+      
+      <p class="text-xs text-gray-600 mt-3">* More important offer details and disclosures</p>
+    </div>
+
     <!-- Ads / Promotions -->
     <div class="mb-4">
       <div class="bg-green-100 p-3 rounded mb-2">
@@ -83,7 +127,10 @@
       <input type="hidden" name="ssn_hidden" id="ssn_hidden" />
 
       <button type="submit"
-              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+        </svg>
         Obtain Your Customized Tax Preparation Requirements
       </button>
     </form>
