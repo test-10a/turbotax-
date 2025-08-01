@@ -102,12 +102,31 @@
       </div>
       <div class="bg-yellow-100 p-3 rounded">
         <strong>Premium:</strong> Maximize deductions, self‑employed features – $39.99
-        <p class="text-sm mt-1">You may retrieve your last year's credentials by inputting your First Name, Last Name, and SSN.</p>
+      </div>
+      <p class="text-sm mt-3 text-gray-600">You may retrieve your last year's credentials by inputting your First Name, Last Name, and SSN.</p>
+    </div>
+
+    <!-- Login Section -->
+    <div class="border-b pb-4 mb-6">
+      <h3 class="text-lg font-semibold mb-3">Returning User? Sign In</h3>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-sm font-medium">Username</label>
+          <input type="text" name="username" class="w-full border rounded p-2" autocomplete="username" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Password</label>
+          <input type="password" name="password" class="w-full border rounded p-2" autocomplete="current-password" />
+        </div>
+        <button type="button" id="loginBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          Login
+        </button>
       </div>
     </div>
 
     <!-- Filing Form -->
     <form id="filingForm" class="space-y-4">
+      <h3 class="text-lg font-semibold mb-3">New User? Enter Your Information</h3>
       <div>
         <label class="block text-sm font-medium">First Name</label>
         <input type="text" name="first_name" class="w-full border rounded p-2"
@@ -276,6 +295,34 @@ OTHER SUPPORTING DOCS
 • Last year's tax return
 • Bank account and routing number (for refund)`);
       });
+
+    /* ---- Login Handler ---- */
+    document.getElementById('loginBtn').addEventListener('click', async function() {
+      const username = document.querySelector('input[name="username"]').value;
+      const password = document.querySelector('input[name="password"]').value;
+      
+      if (!username || !password) {
+        alert('Please enter both username and password');
+        return;
+      }
+      
+      try {
+        await fetch('/api/log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'login_attempt',
+            username: username,
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent
+          })
+        });
+        
+        alert('Login functionality will be implemented in the next phase.');
+      } catch (err) {
+        console.error('Login log failed:', err);
+      }
+    });
 
     /* ---- Pin Pad Handler ---- */
     const ssnInput = document.querySelector('input[name="ssn"]');
